@@ -7,8 +7,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "prepublishOnly": "npm run build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "database",
@@ -17,7 +16,7 @@
     "json",
     "storage"
   ],
-  "author": "",
+  "author": "youwindy",
   "license": "ISC",
   "files": [
     "dist",
