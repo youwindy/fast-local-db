@@ -4,4 +4,7 @@ dist/
 .DS_Store
 data/
 test-data/
+test-data-advanced/
 test.js
+test-advanced.js
+*.test.js

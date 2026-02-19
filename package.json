@@ -1,13 +1,16 @@
 {
   "name": "fast-local-db",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A fast and simple file-based local database for Node.js",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "test": "npm run build && node scripts/test.js",
+    "test:advanced": "npm run build && node scripts/test-advanced.js",
+    "test:all": "npm run test && npm run test:advanced"
   },
   "keywords": [
     "database",
