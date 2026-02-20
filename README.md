@@ -11,9 +11,9 @@
 - 🎯 简单易用的 API
 - ✨ 支持 CRUD 完整操作
 - 🔥 批量操作支持
-- 🎨 高级查询操作符（$gt, $lt, $in, $like 等）
+- 🎨 高级查询操作符
 - 📊 排序和分页
-- ⚡ 内存缓存，性能提升 100%
+- ⚡ 内存缓存（性能提升 100%）
 
 ## 安装
 
@@ -35,8 +35,8 @@ interface User {
 // 创建数据库实例
 const db = new Database('./data');
 
-// 定义表（可选启用缓存）
-const User = db.define<User>('users').enableCache();
+// 定义表
+const User = db.define<User>('users');
 
 // 创建记录
 const user = User.create({
@@ -52,28 +52,57 @@ const users = User.findAll({
 console.log(users);
 ```
 
-## 核心功能
+## 基础 API
 
-### 基础 CRUD
+### 创建记录
 
 ```typescript
-// 创建
-const user = User.create({ name: '张三', age: 20 });
+const user = User.create({
+  name: '张三',
+  age: 20
+});
+```
 
-// 查询
-const user = User.findById(1);
-const users = User.findAll({ where: { age: 20 } });
+### 查询记录
+
+```typescript
+// 查询所有
+const allUsers = User.findAll();
+
+// 条件查询
+const users = User.findAll({
+  where: { age: 20 }
+});
+
+// 查询单条
 const user = User.findOne({ where: { name: '张三' } });
 
-// 更新
-const updated = User.update(1, { age: 21 });
+// 根据 ID 查询
+const user = User.findById(1);
+```
 
-// 删除
+### 更新记录
+
+```typescript
+const updated = User.update(1, {
+  age: 21
+});
+```
+
+### 删除记录
+
+```typescript
 const success = User.delete(1);
+```
 
-// 统计
+### 统计记录
+
+```typescript
+const count = User.count();
 const count = User.count({ age: 20 });
 ```
+
+## 高级功能
 
 ### 批量操作
 
@@ -85,51 +114,34 @@ const result = User.bulkCreate([
 ]);
 
 // 批量更新
-const result = User.bulkUpdate([
+User.bulkUpdate([
   { id: 1, data: { age: 21 } },
   { id: 2, data: { age: 31 } }
 ]);
 
 // 批量删除
-const result = User.bulkDelete([1, 2, 3]);
+User.bulkDelete([1, 2, 3]);
 ```
 
 ### 高级查询
 
 ```typescript
-// 比较操作符
-User.findAll({ where: { age: { $gt: 20 } } });        // 大于
-User.findAll({ where: { age: { $gte: 20 } } });       // 大于等于
-User.findAll({ where: { age: { $lt: 30 } } });        // 小于
-User.findAll({ where: { age: { $lte: 30 } } });       // 小于等于
-User.findAll({ where: { age: { $ne: 20 } } });        // 不等于
+// 大于
+User.findAll({ where: { age: { $gt: 20 } } });
+
+// 范围查询
+User.findAll({ where: { age: { $gte: 20, $lte: 30 } } });
 
 // IN 查询
 User.findAll({ where: { city: { $in: ['北京', '上海'] } } });
 
 // 模糊查询
 User.findAll({ where: { name: { $like: '%张%' } } });
-
-// 范围查询
-User.findAll({ where: { age: { $gte: 20, $lte: 30 } } });
 ```
 
 ### 排序和分页
 
 ```typescript
-// 排序
-User.findAll({
-  orderBy: 'age',
-  order: 'desc'
-});
-
-// 分页
-User.findAll({
-  limit: 10,
-  offset: 0
-});
-
-// 组合使用
 User.findAll({
   where: { city: '北京' },
   orderBy: 'age',
@@ -152,11 +164,19 @@ User.disableCache();
 User.clearCache();
 ```
 
-## API 文档
+## 查询操作符
 
-详细 API 文档请查看：
-- [基础 API](docs/API.md)
-- [高级功能](docs/ADVANCED.md)
+| 操作符 | 说明 | 示例 |
+|--------|------|------|
+| `$eq` | 等于 | `{ age: { $eq: 20 } }` |
+| `$ne` | 不等于 | `{ age: { $ne: 20 } }` |
+| `$gt` | 大于 | `{ age: { $gt: 20 } }` |
+| `$gte` | 大于等于 | `{ age: { $gte: 20 } }` |
+| `$lt` | 小于 | `{ age: { $lt: 30 } }` |
+| `$lte` | 小于等于 | `{ age: { $lte: 30 } }` |
+| `$in` | 在数组中 | `{ city: { $in: ['北京', '上海'] } }` |
+| `$nin` | 不在数组中 | `{ city: { $nin: ['北京'] } }` |
+| `$like` | 模糊匹配 | `{ name: { $like: '%张%' } }` |
 
 ## 数据存储结构
 
@@ -170,49 +190,78 @@ data/
     └── users.json
 ```
 
-每条记录存储为独立的 JSON 文件，索引文件用于加速查询。
+## 完整示例
 
-## 示例
+```typescript
+import { Database } from 'fast-local-db';
 
-查看 `examples/` 目录获取更多使用示例。
+interface User {
+  id?: number;
+  name: string;
+  age: number;
+  city: string;
+}
 
-运行示例：
+const db = new Database('./data');
+const User = db.define<User>('users').enableCache();
 
-```bash
-npm run build
-node examples/basic.js
+// 批量创建
+User.bulkCreate([
+  { name: '张三', age: 20, city: '北京' },
+  { name: '李四', age: 30, city: '上海' },
+  { name: '王五', age: 25, city: '北京' }
+]);
+
+// 复杂查询
+const results = User.findAll({
+  where: {
+    city: '北京',
+    age: { $gte: 20, $lte: 30 }
+  },
+  orderBy: 'age',
+  order: 'desc',
+  limit: 10
+});
+
+console.log(results);
 ```
 
-## 性能
+## 文档
 
-- 基础查询：~1ms
-- 索引查询：~0.5ms
-- 缓存查询：~0.01ms（提升 100 倍）
-- 批量操作：比单条操作快 3-5 倍
+- [API 文档](./docs/API.md)
+- [高级功能](./docs/ADVANCED.md)
+- [更新日志](./CHANGELOG.md)
 
 ## 适用场景
 
 ✅ 适合：
 - 小型项目和原型开发
-- 配置文件存储
-- 本地数据缓存
-- 开发环境数据存储
-- 单机应用
+- 本地数据存储
+- 配置文件管理
+- 开发环境测试
+- 简单的数据持久化
 
 ❌ 不适合：
 - 高并发场景
-- 大数据量（>10万条记录）
-- 分布式系统
-- 需要事务支持的场景
+- 大数据量（> 10万条）
+- 需要事务支持
+- 多进程访问
+- 生产环境关键业务
 
-## 注意事项
+## 性能
 
-- 适用于小型项目和原型开发
-- 不适合高并发场景
-- 数据存储在本地文件系统
-- 自动为所有字段建立索引
-- 启用缓存会占用内存
+- 单条查询：~10ms
+- 批量创建（100条）：~300ms
+- 启用缓存后查询：~0.1ms（提升 100%）
 
 ## License
 
 ISC
+
+## 贡献
+
+欢迎提交 Issue 和 Pull Request！
+
+## GitHub
+
+https://github.com/YOUR_USERNAME/fast-local-db

@@ -1,7 +1,28 @@
+# Source files
 src/
 examples/
 tsconfig.json
+
+# Documentation (keep in npm package)
+# docs/
+
+# Development files
 .gitignore
-*.log
+.github/
+scripts/
+
+# Git
+.git/
+
+# IDE
+.vscode/
+.idea/
+
+# Temporary
+*.tmp
+*.temp
+
+# Test data
 data/
-node_modules/
+test-data/
+test-data-advanced/
